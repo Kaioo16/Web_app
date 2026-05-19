@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minhas Tarefas</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+        }
+
+        .box {
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+
+        input {
+            width: 70%;
+            padding: 8px;
+        }
+
+        button {
+            padding: 8px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        li {
+            text-align: left;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Minhas Tarefas</h2>
+
+    <form method="POST">
+        <input name="nova" placeholder="Nova tarefa">
+        <button>Adicionar</button>
+    </form>
+
+    <ul>
+    {% for t in tarefas %}
+    <li>
+        {{ t[1] }}
+        <form method="POST" style="display:inline;">
+            <button name="apagar" value="{{ t[0] }}">X</button>
+        </form>
+    </li>
+    {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>
