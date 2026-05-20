@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 import sqlite3
-import psycopg2
+try:
+    import psycopg2
+except:
+    psycopg2 = None
 from flask import Flask, render_template, request, redirect, url_for, session
-from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = "minha_chave_super_secreta_2026"
@@ -21,7 +23,7 @@ def upload():
 def get_db():
     database_url = os.environ.get("DATABASE_URL")
 
-    if database_url:
+    if database_url and psycopg2:
         return psycopg2.connect(database_url)
 
     return sqlite3.connect("app.db")
@@ -79,35 +81,8 @@ def init_db():
     conn.commit()
     conn.close()
 if __name__ == "__main__":
+    init_db()
     app.run()
-
-init_db()
- from werkzeug.security import generate_password_hash
-
-def init_db():
-    conn = sqlite3.connect("app.db")
-    cur = conn.cursor()
-
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
-        username TEXT,
-        password TEXT
-    )
-    """)
-
-    cur.execute("SELECT * FROM users WHERE username='admin'")
-
-    if not cur.fetchone():
-        cur.execute(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
-            ("kaiote", generate_password_hash("1603"))
-        )
-
-    conn.commit()
-    conn.close()
-
-init_db()
 @app.route("/logout")
 def logout():
     session.clear()
@@ -121,7 +96,6 @@ def register():
         conn = get_db()
         cur = conn.cursor()
 
-        senha_hash = generate_password_hash(password)
 
         cur.execute(
             "INSERT INTO users (username, password) VALUES (%s, %s)",
@@ -134,3 +108,4 @@ def register():
         return redirect(url_for("home"))
 
     return render_template("register.html")
+
