@@ -80,6 +80,9 @@ def init_db():
     conn.close()
 
 if __name__ == "__main__":
+    app.run()
+
+init_db()
  from werkzeug.security import generate_password_hash
 
 def init_db():
