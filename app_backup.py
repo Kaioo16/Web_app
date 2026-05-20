@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
-app.secret_key = "minha_chave_super_secreta_2026"
+app.secret_key = "dev"
 
 
 def get_db():
@@ -19,8 +19,6 @@ def home():
 
 @app.route("/dashboard")
 def dashboard():
-    if "user" not in session:
-        return redirect(url_for("home"))
     return render_template("dashboard.html")
 
 
@@ -41,8 +39,7 @@ def login():
     conn.close()
 
     if user and check_password_hash(user[0], password):
-        session["user"] = username
-return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard"))
 
     return "Login inválido"
 
@@ -89,7 +86,3 @@ def init_db():
     conn.close()
 
 init_db()
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("home"))
