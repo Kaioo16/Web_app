@@ -70,7 +70,7 @@ def init_db():
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE,
             password TEXT
         )
@@ -78,7 +78,6 @@ def init_db():
 
     conn.commit()
     conn.close()
-
 
 if __name__ == "__main__":
  from werkzeug.security import generate_password_hash
