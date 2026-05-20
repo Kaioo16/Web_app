@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
+from werkzeug.security import check_password_hash, generate_password_hash
+
+app = Flask(__name__)
+app.secret_key = "minha_chave_super_secreta_2026"
 @app.route("/upload", methods=["POST"])
 def upload():
     arquivo = request.files["file"]
@@ -11,11 +15,6 @@ def upload():
     arquivo.save(caminho)
 
     return "Upload feito com sucesso"
-from werkzeug.security import check_password_hash, generate_password_hash
-
-app = Flask(__name__)
-app.secret_key = "minha_chave_super_secreta_2026"
-
 
 def get_db():
     conn = sqlite3.connect("app.db")
