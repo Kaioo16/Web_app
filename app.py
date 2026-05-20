@@ -31,7 +31,10 @@ def home():
 def dashboard():
     if "user" not in session:
         return redirect(url_for("home"))
-    return render_template("dashboard.html")
+
+    arquivos = os.listdir("uploads") if os.path.exists("uploads") else []
+
+    return render_template("dashboard.html", arquivos=arquivos)
 
 
 @app.route("/login", methods=["POST"])

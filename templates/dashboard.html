@@ -4,3 +4,9 @@
   <input type="file" name="file">
   <button type="submit">Enviar arquivo</button>
 </form>
+<h3>Arquivos enviados:</h3>
+<ul>
+{% for arquivo in arquivos %}
+  <li>{{ arquivo }}</li>
+{% endfor %}
+</ul>
