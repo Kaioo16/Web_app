@@ -82,7 +82,7 @@ def init_db():
     if not cur.fetchone():
         cur.execute(
             "INSERT INTO users (username, password) VALUES (?, ?)",
-            ("kaiote", generate_password_hash("1234"))
+            ("admin", generate_password_hash("1234"))
         )
 
     conn.commit()
