@@ -42,7 +42,7 @@ def login():
 
     if user and check_password_hash(user[0], password):
         session["user"] = username
-return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard"))
 
     return "Login inválido"
 
