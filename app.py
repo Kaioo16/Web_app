@@ -111,3 +111,25 @@ init_db()
 def logout():
     session.clear()
     return redirect(url_for("home"))
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        senha_hash = generate_password_hash(password)
+
+        cur.execute(
+            "INSERT INTO users (username, password) VALUES (%s, %s)",
+            (username, senha_hash)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("home"))
+
+    return render_template("register.html")
