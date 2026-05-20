@@ -1,177 +1,88 @@
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
-from flask import Flask, render_template_string, request, redirect, session
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "segredo"
+app.secret_key = "dev"
 
-def db():
+
+def get_db():
     conn = sqlite3.connect("app.db")
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY,
-            usuario TEXT,
-            senha TEXT
-        )
-    """)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS tarefas (
-            id INTEGER PRIMARY KEY,
-            nome TEXT,
-            user_id INTEGER
-        )
-    """)
+    conn.row_factory = sqlite3.Row
     return conn
 
-# LOGIN
-@app.route("/", methods=["GET", "POST"])
+
+@app.route("/")
+def home():
+    return render_template("login.html")
+
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+
+@app.route("/login", methods=["POST"])
 def login():
-    conn = db()
+    username = request.form["username"]
+    password = request.form["password"]
 
-    if request.method == "POST":
-        u = request.form.get("usuario")
-        s = request.form.get("senha")
+    conn = sqlite3.connect("app.db")
+    cur = conn.cursor()
 
-        user = conn.execute(
-            "SELECT * FROM usuarios WHERE usuario=? AND senha=?",
-            (u, s)
-        ).fetchone()
+    cur.execute(
+        "SELECT password FROM users WHERE username=?",
+        (username,)
+    )
 
-        if user:
-            session["user_id"] = user[0]
-            return redirect("/tarefas")
+    user = cur.fetchone()
+    conn.close()
 
-        return "Login inválido"
+    if user and check_password_hash(user[0], password):
+        return redirect(url_for("dashboard"))
 
-    return """
-    <div style="text-align:center;font-family:Arial">
-        <h2>Login</h2>
-        <form method="POST">
-            <input name="usuario" placeholder="Usuário"><br><br>
-            <input name="senha" type="password" placeholder="Senha"><br><br>
-            <button>Entrar</button>
-        </form>
-    </div>
-    """
+    return "Login inválido"
 
-# TAREFAS
-@app.route("/tarefas", methods=["GET", "POST"])
-def tarefas():
-    if "user_id" not in session:
-        return redirect("/")
+def init_db():
+    conn = get_db()
+    cur = conn.cursor()
 
-    conn = db()
-    uid = session["user_id"]
-
-    if request.method == "POST" and "nova" in request.form:
-        conn.execute(
-            "INSERT INTO tarefas (nome, user_id) VALUES (?, ?)",
-            (request.form["nova"], uid)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT
         )
-        conn.commit()
-        return redirect("/tarefas")
+    """)
 
-    if request.method == "POST" and "apagar" in request.form:
-        conn.execute(
-            "DELETE FROM tarefas WHERE id=? AND user_id=?",
-            (request.form["apagar"], uid)
-        )
-        conn.commit()
-        return redirect("/tarefas")
+    conn.commit()
+    conn.close()
 
-    tarefas = conn.execute(
-        "SELECT * FROM tarefas WHERE user_id=?",
-        (uid,)
-    ).fetchall()
-
-    html = """
-    <html>
-    <head>
-    <style>
-        body {
-            font-family: Arial;
-            background: #111;
-            color: white;
-            margin: 0;
-        }
-
-        .top {
-            background: #222;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .container {
-            padding: 15px;
-        }
-
-        .card {
-            background: #1e1e1e;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        input {
-            padding: 10px;
-            width: 70%;
-        }
-
-        button {
-            padding: 10px;
-            background: #4CAF50;
-            border: none;
-            color: white;
-        }
-
-        .delete {
-            background: red;
-        }
-    </style>
-    </head>
-    <body>
-
-    <div class="top">
-        <h2>Minhas Tarefas</h2>
-    </div>
-
-    <div class="container">
-
-        <form method="POST">
-            <input name="nova" placeholder="Nova tarefa">
-            <button>+</button>
-        </form>
-
-        <br>
-    """
-
-    for t in tarefas:
-        html += f"""
-        <div class="card">
-            <span>{t[1]}</span>
-            <form method="POST">
-                <button class="delete" name="apagar" value="{t[0]}">X</button>
-            </form>
-        </div>
-        """
-
-    html += """
-    </div>
-
-    </body>
-    </html>
-    """
-
-    return html
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/")
-
-import os
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+ from werkzeug.security import generate_password_hash
+
+def init_db():
+    conn = sqlite3.connect("app.db")
+    cur = conn.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        username TEXT,
+        password TEXT
+    )
+    """)
+
+    cur.execute("SELECT * FROM users WHERE username='admin'")
+
+    if not cur.fetchone():
+        cur.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            ("admin", generate_password_hash("1234"))
+        )
+
+    conn.commit()
+    conn.close()
+
+init_db()
