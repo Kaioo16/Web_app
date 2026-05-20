@@ -49,7 +49,7 @@ def register():
     return "Usuário criado"
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
