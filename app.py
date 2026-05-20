@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
 import os
+import sqlite3
+import psycopg2
+from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -17,9 +19,12 @@ def upload():
     return "Upload feito com sucesso"
 
 def get_db():
-    conn = sqlite3.connect("app.db")
-    conn.row_factory = sqlite3.Row
-    return conn
+    database_url = os.environ.get("DATABASE_URL")
+
+    if database_url:
+        return psycopg2.connect(database_url)
+
+    return sqlite3.connect("app.db")
 
 
 @app.route("/")
