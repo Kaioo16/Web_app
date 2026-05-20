@@ -1,9 +1,9 @@
-from flask import Flask, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "chave_secreta"
+app.secret_key = "chave"
 
 
 def init_db():
@@ -21,17 +21,40 @@ def init_db():
     conn.commit()
     conn.close()
 
-
 init_db()
 
 
 @app.route("/")
 def home():
-    return "Servidor rodando"
+    return redirect(url_for("login"))
 
 
-@app.route("/register", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html")
+
+    username = request.form["username"]
+    password = request.form["password"]
+
+    conn = sqlite3.connect("app.db")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cur.fetchone()
+    conn.close()
+
+    if user and check_password_hash(user[2], password):
+        session["user"] = username
+        return redirect(url_for("dashboard"))
+
+    return "Login inválido"
+
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
+    if request.method == "GET":
+        return render_template("register.html")
+
     username = request.form["username"]
     password = generate_password_hash(request.form["password"])
 
@@ -46,35 +69,24 @@ def register():
     conn.commit()
     conn.close()
 
-    return "Usuário criado"
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    username = request.form["username"]
-    password = request.form["password"]
-
-    conn = sqlite3.connect("app.db")
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
-    user = cur.fetchone()
-
-    conn.close()
-
-    if user and check_password_hash(user[2], password):
-        session["user"] = username
-        return "Login OK"
-
-    return "Login inválido"
+    return redirect(url_for("login"))
 
 
 @app.route("/dashboard")
 def dashboard():
     if "user" in session:
-        return f"Bem-vindo {session['user']}"
-    return redirect(url_for("home"))
+        return render_template("dashboard.html", user=session["user"])
+    return redirect(url_for("login"))
 
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+import os
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
