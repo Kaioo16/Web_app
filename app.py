@@ -90,12 +90,14 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+        senha_hash = generate_password_hash(password)
         username = request.form["username"]
         password = request.form["password"]
 
+        senha_hash = generate_password_hash(password)
+
         conn = get_db()
         cur = conn.cursor()
-
 
         cur.execute(
             "INSERT INTO users (username, password) VALUES (%s, %s)",
