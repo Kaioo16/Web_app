@@ -1,5 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
+import os
+@app.route("/upload", methods=["POST"])
+def upload():
+    arquivo = request.files["file"]
+
+    os.makedirs("uploads", exist_ok=True)
+
+    caminho = os.path.join("uploads", arquivo.filename)
+    arquivo.save(caminho)
+
+    return "Upload feito com sucesso"
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
