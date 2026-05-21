@@ -22,10 +22,12 @@ init_db()
 
 # --- HOME ---
 @app.route("/")
-def home():
-    if "user" in session:
-        return f"Logado como {session['user']}"
-    return redirect("/login")
+def index():
+    return render_template("index.html")
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html", user="Kaiote")
 
 # --- LOGIN ---
 @app.route("/login", methods=["GET", "POST"])
