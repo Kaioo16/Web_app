@@ -57,13 +57,8 @@ def login():
         else:
             return "Login inválido"
 
-    return """
-    <form method="post">
-        <input name="username" placeholder="Usuário">
-        <input name="password" type="password" placeholder="Senha">
-        <button type="submit">Entrar</button>
-    </form>
-    """
+    return render_template("login.html")
+       
 
 # --- LOGOUT ---
 @app.route("/logout")
@@ -87,15 +82,8 @@ def register():
         conn.commit()
         conn.close()
 
-        return render_template("register.html")
 
-    return """
-    <form method="post">
-        <input name="username" placeholder="Novo usuário">
-        <input name="password" type="password" placeholder="Senha">
-        <button type="submit">Cadastrar</button>
-    </form>
-    """
+    return render_template("register.html")
 
 # --- RUN ---
 if __name__ == "__main__":
