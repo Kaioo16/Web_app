@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -47,7 +47,8 @@ def login():
         session["user"] = username
         return redirect(url_for("dashboard"))
 
-    return "Login inválido"
+    flash("Usuário ou senha inválidos", "error")
+    return redirect(url_for("login"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -61,21 +62,29 @@ def register():
     conn = sqlite3.connect("app.db")
     cur = conn.cursor()
 
-    cur.execute(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        (username, password)
-    )
+    try:
+        cur.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            (username, password)
+        )
+        conn.commit()
 
-    conn.commit()
-    conn.close()
+        flash("Conta criada com sucesso!", "success")
+        return redirect(url_for("login"))
 
-    return redirect(url_for("login"))
+    except:
+        flash("Usuário já existe", "error")
+        return redirect(url_for("register"))
+
+    finally:
+        conn.close()
 
 
 @app.route("/dashboard")
 def dashboard():
     if "user" in session:
         return render_template("dashboard.html", user=session["user"])
+
     return redirect(url_for("login"))
 
 

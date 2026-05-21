@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>{{ title }}</title>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/dashboard">Home</a>
+    <a href="/logout">Sair</a>
+</div>
+
+<div class="box">
+
+    {% block content %}{% endblock %}
+
+</div>
+
+</body>
+</html>
