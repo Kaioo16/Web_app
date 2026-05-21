@@ -82,10 +82,9 @@ def register():
 
 @app.route("/dashboard")
 def dashboard():
-    if "user" in session:
-        return render_template("dashboard.html", user=session["user"])
-
-    return redirect(url_for("login"))
+    if "user" not in session:
+        return redirect(url_for("home"))
+    return render_template("dashboard.html")
 
 
 @app.route("/logout")
