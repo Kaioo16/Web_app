@@ -1,134 +1,87 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, session
 import sqlite3
-import os
-from werkzeug.security import generate_password_hash, check_password_hash
-
-try:
-    import psycopg2
-except:
-    psycopg2 = None
 
 app = Flask(__name__)
-app.secret_key = "123456"
-app.config["SESSION_COOKIE_SECURE"] = True
+app.secret_key = "chave_secreta"
 
-def get_db():
-    database_url = os.environ.get("DATABASE_URL")
-
-    if database_url and psycopg2:
-        return psycopg2.connect(database_url)
-
-    return sqlite3.connect("app.db")
-
-
+# --- BANCO ---
 def init_db():
-    conn = get_db()
-    cur = conn.cursor()
-
-    if psycopg2 and os.environ.get("DATABASE_URL"):
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                username TEXT UNIQUE,
-                password TEXT
-            )
-        """)
-    else:
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE,
-                password TEXT
-            )
-        """)
-
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            password TEXT
+        )
+    """)
     conn.commit()
     conn.close()
+
 init_db()
 
-if __name__ == "__main__":
-    app.run()
-
-
+# --- HOME ---
 @app.route("/")
 def home():
-    return redirect(url_for("login"))
+    if "user" in session:
+        return f"Logado como {session['user']}"
+    return redirect("/login")
 
-
+# --- LOGIN ---
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
+    if request.method == "POST":
+        user = request.form["username"]
+        password = request.form["password"]
 
-    username = request.form["username"]
-    password = request.form["password"]
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    if psycopg2 and os.environ.get("DATABASE_URL"):
-        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    else:
-        cur.execute("SELECT * FROM users WHERE username = ?", (username,))
-
-    user = cur.fetchone()
-    conn.close()
-
-    if user and check_password_hash(user[2], password):
-        session["user"] = username
-        return redirect(url_for("dashboard"))
-
-    flash("Usuário ou senha inválidos", "error")
-    return redirect(url_for("home"))
-
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "GET":
-        return render_template("register.html")
-
-    username = request.form["username"]
-    password = generate_password_hash(request.form["password"])
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    try:
-        if psycopg2 and os.environ.get("DATABASE_URL"):
-            cur.execute(
-                "INSERT INTO users (username, password) VALUES (%s, %s)",
-                (username, password)
-            )
-        else:
-            cur.execute(
-                "INSERT INTO users (username, password) VALUES (?, ?)",
-                (username, password)
-            )
-
-        conn.commit()
-        flash("Conta criada com sucesso!", "success")
-        return redirect(url_for("login"))
-
-    except:
-        flash("Usuário já existe", "error")
-        return redirect(url_for("register"))
-
-    finally:
+        conn = sqlite3.connect("users.db")
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username=? AND password=?", (user, password))
+        result = c.fetchone()
         conn.close()
 
+        if result:
+            session["user"] = user
+            return redirect("/")
+        else:
+            return "Login inválido"
 
-@app.route("/dashboard")
-def dashboard():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    return render_template("dashboard.html")
+    return """
+    <form method="post">
+        <input name="username" placeholder="Usuário">
+        <input name="password" type="password" placeholder="Senha">
+        <button type="submit">Entrar</button>
+    </form>
+    """
 
-
+# --- LOGOUT ---
 @app.route("/logout")
 def logout():
-    session.clear()
-    return redirect(url_for("home"))
+    session.pop("user", None)
+    return redirect("/login")
 
+# --- CADASTRO SIMPLES ---
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        user = request.form["username"]
+        password = request.form["password"]
+
+        conn = sqlite3.connect("users.db")
+        c = conn.cursor()
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (user, password))
+        conn.commit()
+        conn.close()
+
+        return redirect("/login")
+
+    return """
+    <form method="post">
+        <input name="username" placeholder="Novo usuário">
+        <input name="password" type="password" placeholder="Senha">
+        <button type="submit">Cadastrar</button>
+    </form>
+    """
 
 import os
 

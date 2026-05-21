@@ -1,19 +1,13 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
 
-{% block content %}
+<div class="box">
+    TESTE
+</div>
 
-<h2>Login</h2>
-
-{% if error %}
-<p class="error">{{ error }}</p>
-{% endif %}
-
-<form method="POST">
-    <input name="username" placeholder="Usuário">
-    <input name="password" type="password" placeholder="Senha">
-    <button>Entrar</button>
-</form>
-
-<a href="/register">Criar conta</a>
-
-{% endblock %}
+</body>
+</html>
