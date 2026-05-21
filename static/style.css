@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #0f172a;
+    background: #0b1220;
     color: white;
 }
 
@@ -10,11 +10,12 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 15px 25px;
-    background: #1e293b;
+    background: #111a2e;
+    border-bottom: 1px solid #1f2a44;
 }
 
 .navbar a {
-    color: white;
+    color: #cbd5e1;
     margin-left: 15px;
     text-decoration: none;
 }
@@ -32,22 +33,32 @@ body {
 
 /* CARD */
 .card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 20px;
+    background: #111a2e;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: none;
 }
 
 /* BOTÃO */
-button, .btn {
+button {
     background: #3b82f6;
     border: none;
     padding: 10px 15px;
     color: white;
     border-radius: 8px;
     cursor: pointer;
+    width: 100%;
 }
 
-button:hover, .btn:hover {
+button:hover {
     background: #2563eb;
 }
