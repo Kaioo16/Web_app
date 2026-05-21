@@ -3,33 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Meu Sistema</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-<h1 style="color:red; font-size:40px;">
-TESTE RENDER ATIVO
-</h1>
-
 <div class="navbar">
-    <div class="nav-left">Meu App</div>
-
-    <div class="nav-right">
-        <a href="/dashboard">Home</a>
+    <div class="logo">Meu Sistema</div>
+    <div class="links">
+        <a href="/dashboard">Dashboard</a>
         <a href="/logout">Sair</a>
     </div>
 </div>
 
 <div class="container">
-
-    <div class="box">
-
-        {% block content %}{% endblock %}
-
-    </div>
-
+    {% block content %}{% endblock %}
 </div>
 
 </body>

@@ -53,7 +53,7 @@ def login():
 
         if result:
             session["user"] = user
-            return redirect("/dashboard")
+            return render_template("login.html")
         else:
             return "Login inválido"
 
@@ -87,7 +87,7 @@ def register():
         conn.commit()
         conn.close()
 
-        return redirect("/login")
+        return render_template("register.html")
 
     return """
     <form method="post">

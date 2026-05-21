@@ -2,16 +2,9 @@
 
 {% block content %}
 
-<h2>Dashboard</h2>
-
 <div class="card">
-    <p><b>Usuário:</b> {{ user }}</p>
-    <p>Status: Online</p>
+    <h2>Dashboard</h2>
+    <p>Bem-vindo, <b>{{ user }}</b></p>
 </div>
 
-<a href="/logout">
-    <button>Sair</button>
-</a>
-
 {% endblock %}
-<a href="/logout" class="btn btn-danger">Sair</a>

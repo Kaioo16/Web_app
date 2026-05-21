@@ -5,30 +5,49 @@ body {
     color: white;
 }
 
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 40px;
-    text-align: center;
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 25px;
+    background: #1e293b;
 }
 
+.navbar a {
+    color: white;
+    margin-left: 15px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: #38bdf8;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 40px;
+}
+
+/* CARD */
 .card {
     background: #1e293b;
     padding: 20px;
     border-radius: 12px;
     margin-top: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
-button {
+/* BOTÃO */
+button, .btn {
     background: #3b82f6;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     color: white;
     border-radius: 8px;
     cursor: pointer;
 }
 
-button:hover {
+button:hover, .btn:hover {
     background: #2563eb;
 }

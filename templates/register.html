@@ -2,14 +2,14 @@
 
 {% block content %}
 
-<h2>Registro</h2>
+<div class="card">
+    <h2>Cadastro</h2>
 
-<form method="POST">
-    <input name="username" placeholder="Usuário">
-    <input name="password" type="password" placeholder="Senha">
-    <button>Criar</button>
-</form>
-
-<a href="/login">Voltar</a>
+    <form method="post">
+        <input name="username" placeholder="Usuário"><br><br>
+        <input name="password" type="password" placeholder="Senha"><br><br>
+        <button type="submit">Cadastrar</button>
+    </form>
+</div>
 
 {% endblock %}
