@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "chave_secreta"
@@ -23,11 +24,16 @@ init_db()
 # --- HOME ---
 @app.route("/")
 def index():
-    return render_template("index.html")
+    if "user" in session:
+        return redirect("/dashboard")
+    return redirect("/login")
 
+# --- DASHBOARD ---
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html", user="Kaiote")
+    if "user" not in session:
+        return redirect("/login")
+    return render_template("dashboard.html", user=session["user"])
 
 # --- LOGIN ---
 @app.route("/login", methods=["GET", "POST"])
@@ -38,13 +44,16 @@ def login():
 
         conn = sqlite3.connect("users.db")
         c = conn.cursor()
-        c.execute("SELECT * FROM users WHERE username=? AND password=?", (user, password))
+        c.execute(
+            "SELECT * FROM users WHERE username=? AND password=?",
+            (user, password)
+        )
         result = c.fetchone()
         conn.close()
 
         if result:
             session["user"] = user
-            return redirect("/")
+            return redirect("/dashboard")
         else:
             return "Login inválido"
 
@@ -62,7 +71,7 @@ def logout():
     session.pop("user", None)
     return redirect("/login")
 
-# --- CADASTRO SIMPLES ---
+# --- REGISTER ---
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -71,7 +80,10 @@ def register():
 
         conn = sqlite3.connect("users.db")
         c = conn.cursor()
-        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (user, password))
+        c.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            (user, password)
+        )
         conn.commit()
         conn.close()
 
@@ -85,8 +97,7 @@ def register():
     </form>
     """
 
-import os
-
+# --- RUN ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
