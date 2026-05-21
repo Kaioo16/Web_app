@@ -37,9 +37,9 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    conn = sqlite3.connect("app.db")
+    conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
     user = cur.fetchone()
     conn.close()
 
