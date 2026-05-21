@@ -90,14 +90,21 @@ def register():
     username = request.form["username"]
     password = generate_password_hash(request.form["password"])
 
-    conn = sqlite3.connect("app.db")
+    conn = get_db()
     cur = conn.cursor()
 
     try:
-        cur.execute(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
-            (username, password)
-        )
+        if psycopg2 and os.environ.get("DATABASE_URL"):
+    cur.execute(
+        "INSERT INTO users (username, password) VALUES (%s, %s)",
+        (username, password)
+    )
+else:
+    cur.execute(
+        "INSERT INTO users (username, password) VALUES (?, ?)",
+        (username, password)
+    )
+        
         conn.commit()
 
         flash("Conta criada com sucesso!", "success")
