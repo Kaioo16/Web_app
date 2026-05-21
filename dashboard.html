@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Dashboard</h2>
+
+<div class="card">
+    <p><b>Usuário:</b> {{ user }}</p>
+    <p>Status: Online</p>
+</div>
+
+<a href="/logout" class="btn">
+    Sair
+</a>
+
+{% endblock %}

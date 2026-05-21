@@ -40,3 +40,16 @@ body {
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
+.btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #ef4444;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.btn:hover {
+    background: #dc2626;
+}
