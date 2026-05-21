@@ -95,18 +95,17 @@ def register():
 
     try:
         if psycopg2 and os.environ.get("DATABASE_URL"):
-    cur.execute(
-        "INSERT INTO users (username, password) VALUES (%s, %s)",
-        (username, password)
-    )
-else:
-    cur.execute(
-        "INSERT INTO users (username, password) VALUES (?, ?)",
-        (username, password)
-    )
-        
-        conn.commit()
+            cur.execute(
+                "INSERT INTO users (username, password) VALUES (%s, %s)",
+                (username, password)
+            )
+        else:
+            cur.execute(
+                "INSERT INTO users (username, password) VALUES (?, ?)",
+                (username, password)
+            )
 
+        conn.commit()
         flash("Conta criada com sucesso!", "success")
         return redirect(url_for("login"))
 
