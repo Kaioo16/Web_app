@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 try:
@@ -20,21 +21,32 @@ def get_db():
 
 
 def init_db():
-    conn = sqlite3.connect("app.db")
+    conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username TEXT UNIQUE,
-        password TEXT
-    )
-""")
+    if psycopg2 and os.environ.get("DATABASE_URL"):
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username TEXT UNIQUE,
+                password TEXT
+            )
+        """)
+    else:
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT
+            )
+        """)
 
     conn.commit()
     conn.close()
-
 init_db()
+
+if __name__ == "__main__":
+    app.run()
 
 
 @app.route("/")
