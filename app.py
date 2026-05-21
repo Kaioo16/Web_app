@@ -10,6 +10,7 @@ except:
 
 app = Flask(__name__)
 app.secret_key = "123456"
+app.config["SESSION_COOKIE_SECURE"] = True
 
 def get_db():
     database_url = os.environ.get("DATABASE_URL")
