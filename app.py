@@ -42,11 +42,8 @@ def home():
     return redirect(url_for("login"))
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
-
     username = request.form["username"]
     password = request.form["password"]
 
@@ -54,9 +51,10 @@ def login():
     cur = conn.cursor()
 
     if psycopg2 and os.environ.get("DATABASE_URL"):
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-else:
-    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+    else:
+        cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+
     user = cur.fetchone()
     conn.close()
 
@@ -65,7 +63,7 @@ else:
         return redirect(url_for("dashboard"))
 
     flash("Usuário ou senha inválidos", "error")
-    return redirect(url_for("login"))
+    return redirect(url_for("home"))
 
 
 @app.route("/register", methods=["GET", "POST"])
