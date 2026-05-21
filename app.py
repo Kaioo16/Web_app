@@ -5,6 +5,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = "123456"
 
+def get_db():
+    database_url = os.environ.get("DATABASE_URL")
+
+    if database_url and psycopg2:
+        return psycopg2.connect(database_url)
+
+    return sqlite3.connect("app.db")
+
 
 def init_db():
     conn = sqlite3.connect("app.db")
