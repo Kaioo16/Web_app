@@ -52,7 +52,11 @@ def login():
 
     conn = get_db()
     cur = conn.cursor()
+
+    if psycopg2 and os.environ.get("DATABASE_URL"):
     cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+else:
+    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
     user = cur.fetchone()
     conn.close()
 
