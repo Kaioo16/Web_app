@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="/static/style.css">
-    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <title>Meu Sistema</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <div class="navbar">
-    <a href="/dashboard">Home</a>
-    <a href="/logout">Sair</a>
+    <div class="nav-left">Meu App</div>
+
+    <div class="nav-right">
+        <a href="/dashboard">Home</a>
+        <a href="/logout">Sair</a>
+    </div>
 </div>
 
-<div class="box">
+<div class="container">
 
-    {% block content %}{% endblock %}
+    <div class="box">
+
+        {% block content %}{% endblock %}
+
+    </div>
 
 </div>
 
