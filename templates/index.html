@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Meu Site</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <div class="container">
-    <h1>Bem-vindo ao meu site 🚀</h1>
-    <p>Seu sistema está online no Render</p>
-
-    <button onclick="alert('Funcionando!')">
-        Clique aqui
-    </button>
+    <h1>Meu Sistema 🚀</h1>
+    <div class="card">
+        <p>Site funcionando</p>
+    </div>
 </div>
 
 </body>
